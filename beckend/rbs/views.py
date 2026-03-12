@@ -9,7 +9,8 @@ from ai_model.ml import load_rbs_model
 import numpy as np
 
 class SignalDataListView(APIView):
-    permission_classes = [IsAuthenticated]  # Only authenticated users can list data
+    # For local/demo use we allow read access without auth
+    permission_classes = [AllowAny]
 
     def get(self, request):
         # Retrieve all SignalData entries, ordered by time_of_day (or any other sorting logic you prefer)

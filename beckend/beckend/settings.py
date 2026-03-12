@@ -158,8 +158,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
-# Enable cookies and credentials
-CORS_ALLOW_CREDENTIALS = True
+# For local development/demo, allow all origins so the React dev server
+# can always talk to the API regardless of host/port.
+CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080",

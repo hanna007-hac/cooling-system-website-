@@ -62,7 +62,16 @@ py manage.py migrate
 py manage.py createsuperuser
 ```
 
-6. **Run the development server**:
+6. **Default demo login user**
+
+On first startup, the backend automatically creates a demo admin user:
+
+- **Username**: `demo`
+- **Password**: `demo1234`
+
+You can use this account to log into the dashboard immediately. You can also create your own users later from Django or via the API.
+
+7. **Run the development server**:
 
 ```powershell
 py manage.py runserver

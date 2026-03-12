@@ -10,7 +10,8 @@ from ai_model.ml import load_freq_model
 
 
 class ListingSignalDataView(APIView):
-    permission_classes = [IsAuthenticated]  # Anyone can access this view
+    # For local/demo use we allow read access without auth
+    permission_classes = [AllowAny]
 
     def get(self, request):
         try:
