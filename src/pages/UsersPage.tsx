@@ -25,7 +25,11 @@ export default function UsersPage() {
   useEffect(() => { fetchUsers(); }, []);
 
   const handleCreate = async () => {
-    if (!form.first_name || !form.email) return;
+    // Only require email; names are optional.
+    if (!form.email.trim()) {
+      addToast('Email is required to create a user', 'error');
+      return;
+    }
     setLoading(true);
     try {
       await api.createUser(form);

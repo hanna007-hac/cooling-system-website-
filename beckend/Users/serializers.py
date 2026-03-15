@@ -3,21 +3,51 @@ from django.contrib.auth.models import User
 
 
 class AdminUserCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer used by the dashboard "User Management" page.
+    It matches the fields the frontend sends:
+      - first_name, last_name, email, is_active, is_superuser
+    and auto-generates:
+      - username (from email) and a default password.
+    """
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'is_staff', 'is_active', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ['id', 'first_name', 'last_name', 'email', 'is_active', 'is_superuser']
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        email = validated_data.get('email', '')
+        base_username = (email.split('@')[0] or 'user').lower()
+
+        # Ensure username is unique
+        username = base_username
+        i = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{i}"
+            i += 1
+
+        is_superuser = validated_data.get('is_superuser', False)
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password='changeme123',  # default password for new users
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            is_active=validated_data.get('is_active', True),
+            is_superuser=is_superuser,
+            is_staff=is_superuser,
+        )
         return user
 
     def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        if password:
-            instance.set_password(password)
+        # Allow updating basic profile + flags from the dashboard
+        for attr in ['first_name', 'last_name', 'email', 'is_active', 'is_superuser']:
+            if attr in validated_data:
+                setattr(instance, attr, validated_data[attr])
+
+        # Keep staff flag in sync with superuser for simplicity
+        instance.is_staff = instance.is_superuser
         instance.save()
         return instance
 

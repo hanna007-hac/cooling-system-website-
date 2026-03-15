@@ -1,7 +1,10 @@
 const BASE = 'http://localhost:8000';
 
 function getToken() {
-  return localStorage.getItem('token') || '';
+  const raw = localStorage.getItem('token');
+  // Guard against invalid stored values like "null" or "undefined"
+  if (!raw || raw === 'null' || raw === 'undefined') return '';
+  return raw;
 }
 
 async function req<T>(method: string, path: string, body?: unknown): Promise<T> {
