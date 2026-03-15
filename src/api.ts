@@ -17,6 +17,13 @@ async function req<T>(method: string, path: string, body?: unknown): Promise<T> 
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) throw new Error(`API request failed with status ${res.status}`);
+
+  // DELETE endpoints like /users/admin/users/<id>/ return 204 No Content.
+  // Calling res.json() on an empty body throws, so we handle that here.
+  if (res.status === 204 || res.headers.get('Content-Length') === '0') {
+    return undefined as unknown as T;
+  }
+
   return res.json();
 }
 
